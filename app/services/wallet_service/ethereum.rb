@@ -30,6 +30,7 @@ module WalletService
 
     def deposit_collection_fees(deposit, options = {})
       currency_options = deposit.currency.options.symbolize_keys
+      fee_options = wallet.currency.options.symbolize_keys
 
       # Calculate fees paid in gas for deposit collection of ERC20.
       # Use currency gas_limit and gas_price options if they are present.
@@ -44,7 +45,14 @@ module WalletService
         end
 
       # Set fees for deposit collection transaction.
-      options = DEFAULT_ETH_FEE.merge options
+      options =
+        if fee_options[:gas_limit].present? && fee_options[:gas_price].present?
+          fee_options
+        else
+          DEFAULT_ETH_FEE
+        end.yield_self do |fee_opt|
+          fee_opt.merge options
+        end
 
       fee_wallet = erc20_fee_wallet
       destination_address = deposit.account.payment_address.address
