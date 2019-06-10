@@ -75,20 +75,31 @@ module API
           present order, with: API::V2::Entities::Order
         end
 
+        # TODO: Add new parameter: trigger_price.
         desc 'New Sell/Buy order API with advanced order types support.',
              success: API::V2::Entities::Order
         params do
           use :market, :order
         end
         post '/orders' do
-          if params[:ord_type] == 'market' && params.key?(:price)
+          if is_market_order? && params.key?(:price)
             error!({ errors: ['market.order.market_order_price'] }, 422)
           end
-          order = create_order2(params)
-          present order, with: API::V2::Entities::Order
+
+          if is_advanced_order?
+            # TODO: Check that trigger_price specified.
+            order = create_advanced_order(params)
+            present order, with: API::V2::Entities::Order
+          else
+            order = create_order(params)
+            present order, with: API::V2::Entities::Order
+          end
+
+          # TODO: Should we return trigger price here ?
+
         end
 
-        desc 'Cancel an order.'
+          desc 'Cancel an order.'
         params do
           use :order_id
         end

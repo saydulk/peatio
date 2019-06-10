@@ -33,32 +33,33 @@ class Trigger < ApplicationRecord
   # 2 - triggered by trade
   # 3 - reject order on submit
   # 4 - cancel order by user
-  STATES = { pending: 0, active: 100, done: 200, cancelled: 255 }.freeze
+  STATES  = { pending: 0, active: 100, done: 200, cancelled: 255 }.freeze
 
-  # TODO: Order types documentation.
+  # Supported statuses of trigger.
+  PENDING    = 0
+  ACTIVE     = 100
+  DONE       = 200
+  CANCELLED  = 255
+
   TYPES = {
-    # Regular order types:
-    market:              10,
-    limit:               11,
     stop_loss:           20,
     stop_loss_limit:     21,
     trailing_stop:       30,
     trailing_stop_limit: 31,
     oco:                 41,
-
-    # Margin order types:
-    margin_market:              110,
-    margin_limit:               111,
-    margin_stop_loss:           120,
-    margin_stop_loss_limit:     121,
-    margin_trailing_stop:       130,
-    margin_trailing_stop_limit: 131,
-    margin_oco:                 141
   }.freeze
 
   enumerize :state, in: STATES, scope: true
 
   enumerize :order_type, in: TYPES, scope: true
+
+  def as_json_for_events_processor
+      {  id:         id,
+         order_type: order_type,
+         value:      member_id,
+         state:      reference_id,
+         order:      order.as_json_for_events_processor }
+  end
 end
 
 # == Schema Information

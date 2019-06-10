@@ -22,6 +22,14 @@ module API
         )
 
         expose(
+            :trigger_price,
+            documentation: {
+                type: BigDecimal,
+                desc: "When this price reached order triggered"
+            }
+        )
+
+        expose(
           :ord_type,
           documentation: {
             type: String,
@@ -130,7 +138,7 @@ module API
           documentation: {
             type: 'API::V2::Entities::Trade',
             is_array: true,
-            desc: "Trades wiht this order."
+            desc: "Trades with this order."
           },
           if: { type: :full }
         ) do |order, _options|
