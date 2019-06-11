@@ -25,7 +25,6 @@ module API
       end
 
       def check_balance(order)
-        binding.pry
         current_user.accounts
                     .find_by_currency_id(order.currency)
                     .balance >= order.locked

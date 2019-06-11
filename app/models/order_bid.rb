@@ -42,7 +42,7 @@ class OrderBid < Order
   end
 
   LOCKING_BUFFER_FACTOR = '1.1'.to_d
-  def compute_locked(trigger_price)
+  def compute_locked(trigger_price = nil)
     if is_advanced? && trigger_price.blank?
       raise ArgumentError, "The variable trigger_price is not set."
     end
