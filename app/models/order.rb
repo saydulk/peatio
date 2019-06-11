@@ -237,7 +237,7 @@ class Order < ApplicationRecord
     required_funds = Account::ZERO
     expected_volume = volume
 
-    if is_advanced_order?
+    if is_advanced?
       trigger_price * expected_volume
     else
       until expected_volume.zero? || price_levels.empty?

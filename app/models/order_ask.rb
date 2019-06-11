@@ -42,14 +42,14 @@ class OrderAsk < Order
   end
 
   def compute_locked(trigger_price)
-    if is_advanced_order? && trigger_price.blank?
+    if is_advanced? && trigger_price.blank?
       raise ArgumentError, "The variable trigger_price is not set."
     end
 
     case ord_type
-    when is_limit_order?
+    when is_limit?
       volume
-    when is_market_order?
+    when is_market?
       estimate_required_funds(Global[market_id].bids, trigger_price) {|_p, v| v}
     end
   end

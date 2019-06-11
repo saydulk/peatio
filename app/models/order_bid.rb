@@ -43,14 +43,14 @@ class OrderBid < Order
 
   LOCKING_BUFFER_FACTOR = '1.1'.to_d
   def compute_locked(trigger_price)
-    if is_advanced_order? && trigger_price.blank?
+    if is_advanced? && trigger_price.blank?
       raise ArgumentError, "The variable trigger_price is not set."
     end
 
     case ord_type
-    when is_limit_order?
+    when is_limit?
       price*volume
-    when is_market_order?
+    when is_market?
       funds = estimate_required_funds(Global[market_id].asks, trigger_price) {|p, v| p*v }
       funds*LOCKING_BUFFER_FACTOR
     end

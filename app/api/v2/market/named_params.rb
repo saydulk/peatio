@@ -28,7 +28,7 @@ module API
                    values: { value: -> { Order::TYPES }, message: 'market.order.invalid_type' },
                    default: 'limit',
                    desc: -> { V2::Entities::Order.documentation[:type] }
-          given ord_type: ->(val) { Order::LIMIT_TYPES.include?(val) } do
+          given ord_type: ->(val) { Order.is_limit?(val) } do
             requires :price,
                      type: { value: BigDecimal, message: 'market.order.non_decimal_price' },
                      values: { value: -> (p){ p.try(:positive?) }, message: 'market.order.non_positive_price' },
