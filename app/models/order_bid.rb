@@ -47,11 +47,14 @@ class OrderBid < Order
       raise ArgumentError, "The variable trigger_price is not set."
     end
 
+    binding.pry
+
     case ord_type
     when is_limit?
       price*volume
     when is_market?
       funds = estimate_required_funds(Global[market_id].asks, trigger_price) {|p, v| p*v }
+      binding.pry
       funds*LOCKING_BUFFER_FACTOR
     end
   end

@@ -41,7 +41,8 @@ class OrderAsk < Order
     Currency.find(ask)
   end
 
-  def compute_locked(trigger_price)
+  def compute_locked(trigger_price = nil)
+    binding.pry
     if is_advanced? && trigger_price.blank?
       raise ArgumentError, "The variable trigger_price is not set."
     end
@@ -51,6 +52,7 @@ class OrderAsk < Order
       volume
     when is_market?
       estimate_required_funds(Global[market_id].bids, trigger_price) {|_p, v| v}
+      binding.pry
     end
   end
 

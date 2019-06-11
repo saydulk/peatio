@@ -39,7 +39,7 @@ module API
         }
 
         order = build_order(attrs)
-        submit_order(order, trigger_price)
+        submit_order(order)
         order
       rescue => e
         message = create_order_errors.fetch(e.class, 'market.order.create_error')
@@ -68,9 +68,10 @@ module API
         error!({ errors: [message] }, 422)
       end
 
-      def submit_order(order, attrs)
+      def submit_order(order, attrs = nil)
         order.fix_number_precision # number must be fixed before computing locked
         order.locked = order.origin_locked = order.compute_locked(attrs[:trigger_price])
+        binding.pry
         raise ::Account::AccountError unless check_balance(order)
 
         order.save!

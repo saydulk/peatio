@@ -238,7 +238,8 @@ class Order < ApplicationRecord
     expected_volume = volume
 
     if is_advanced?
-      trigger_price * expected_volume
+      binding.pry
+      required_funds = trigger_price * expected_volume
     else
       until expected_volume.zero? || price_levels.empty?
         level_price, level_volume = price_levels.shift
