@@ -20,6 +20,7 @@ module Bench
         @number = config[:number].to_i
         @step = config.fetch(:step, 10000).to_i
         @markets = ::Market.where(id: config[:markets].split(',').map(&:squish).reject(&:blank?))
+        @i = 0
       end
 
       def generate!(members = nil)
@@ -27,8 +28,9 @@ module Bench
         @queue = Queue.new
         Array.new(@number / @step) do
           Rails.logger.info { "Created orders: #{@queue.size}" }
-          ActiveRecord::Base.transaction do
-            Array.new(@step) do
+          Array.new(@step) do
+            ActiveRecord::Base.transaction do
+              @i += 1
               create_order.tap { |o| @queue << o }
             end
           end
@@ -50,12 +52,9 @@ module Bench
       private
 
       def create_order
-        Order.new(construct_order)
-             .tap(&:fix_number_precision)
-             .tap { |o| o.locked = o.origin_locked = o.compute_locked }
-             .tap { |o| o.hold_account!.lock_funds(o.locked) }
-             .tap(&:save)
+        Order.new(construct_order(@i))
       end
+
 
       def construct_order
         method_not_implemented
