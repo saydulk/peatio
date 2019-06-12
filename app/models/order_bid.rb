@@ -48,7 +48,7 @@ class OrderBid < Order
       price*volume
     when 'market'
       funds = estimate_required_funds(Global[market_id].asks) {|p, v| p*v }
-      funds*LOCKING_BUFFER_FACTOR
+      (funds*LOCKING_BUFFER_FACTOR).round(market.ask_precision, BigDecimal::ROUND_UP)
     end
   end
 
