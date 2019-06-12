@@ -8,7 +8,7 @@ module Matching
     delegate :ask_orders, :bid_orders, to: :orderbook
 
     def initialize(market, options={})
-      @market    = market
+      @market = market
       @orderbook = OrderBookManager.new(market.id)
 
       # Engine is able to run in different mode:
@@ -27,7 +27,7 @@ module Matching
     end
 
     def cancel(order)
-      book, counter_book = orderbook.get_books(order.type)
+      book, = orderbook.get_books(order.type)
       book.remove(order)
       publish_cancel(order)
     rescue => e
@@ -77,7 +77,7 @@ module Matching
       return if order.filled?
       return unless (counter_order = counter_book.top)
 
-      if trade = order.trade_with(counter_order, counter_book)
+      if trade = order.trade_with(counter_order, counter_book, @market.ask_precision, @market.bid_precision)
         counter_book.fill_top(*trade)
         order.fill(*trade)
         publish(order, counter_order, trade)
@@ -92,11 +92,10 @@ module Matching
 
     def publish(order, counter_order, trade)
       ask, bid = order.type == :ask ? [order, counter_order] : [counter_order, order]
-
       price  = @market.fix_number_precision :bid, trade[0]
       volume = @market.fix_number_precision :ask, trade[1]
+      # TODO: Round here to 8
       funds  = trade[2]
-
       Rails.logger.info { "[#{@market.id}] new trade - ask: #{ask.label} bid: #{bid.label} price: #{price} volume: #{volume} funds: #{funds}" }
 
       @queue.enqueue(
