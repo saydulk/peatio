@@ -7,6 +7,7 @@ running = true
 Signal.trap(:TERM) { running = false }
 
 while running
+  begin
   Blockchain.active.tap do |blockchains|
     if ENV.key?('BLOCKCHAINS')
       blockchain_keys = ENV.fetch('BLOCKCHAINS').split(',').map(&:squish).reject(&:blank?)
@@ -37,6 +38,37 @@ while running
       Rails.logger.info { "Finished processing #{bc.key} block number #{block_id}." }
     end
     Rails.logger.info { "Finished processing #{bc.name} blocks." }
+  end
+  rescue Mysql2::Error::ConnectionError => e
+    begin
+      Rails.logger.info { 'Try recconecting to db.' }
+      retries ||= 0
+      ActiveRecord::Base.connection.reconnect!
+    rescue
+      sleep_time = (retries += 1)**1.5
+      Rails.logger.info { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
+      sleep sleep_time
+      retries < 5 ? retry : raise(e) # will retry the reconnect
+    else
+      Rails.logger.info { 'Connection established' }
+      retries = 0
+    end
+  rescue ActiveRecord::StatementInvalid => e
+    if e.cause.is_a?(Mysql2::Error::ConnectionError)
+      begin
+        Rails.logger.info { 'Try recconecting to db.' }
+        retries ||= 0
+        ActiveRecord::Base.connection.reconnect!
+      rescue
+        sleep_time = (retries += 1)**1.5
+        Rails.logger.info { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
+        sleep sleep_time
+        retries < 5 ? retry : raise(e) # will retry the reconnect
+      else
+        Rails.logger.info { 'Connection established' }
+        retries = 0
+      end
+    end
   rescue => e
     report_exception(e)
   end
