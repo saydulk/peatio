@@ -64,9 +64,9 @@ describe Worker::WithdrawCoin do
         .raises(Peatio::Wallet::Registry::NotRegisteredAdapterError)
     end
 
-    it 'returns true and fail withdrawal' do
+    it 'returns true and marks withdrawal as failing' do
       expect(Worker::WithdrawCoin.new.process(processing_withdrawal.as_json)).to be_truthy
-      expect(processing_withdrawal.reload.failed?).to be_truthy
+      expect(processing_withdrawal.reload.failing?).to be_truthy
     end
   end
 
@@ -95,9 +95,9 @@ describe Worker::WithdrawCoin do
                     .raises(Peatio::Blockchain::ClientError)
     end
 
-    it 'returns true and fail withdrawal' do
+    it 'returns true and marks withdrawal as failing' do
       expect(Worker::WithdrawCoin.new.process(processing_withdrawal.as_json)).to be_truthy
-      expect(processing_withdrawal.reload.failed?).to be_truthy
+      expect(processing_withdrawal.reload.failing?).to be_truthy
     end
   end
 

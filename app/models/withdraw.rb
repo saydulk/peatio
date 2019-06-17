@@ -6,12 +6,15 @@ class Withdraw < ApplicationRecord
                submitted
                rejected
                accepted
+               skipped
                processing
                succeed
                canceled
+               failing
                failed
                confirming].freeze
   COMPLETED_STATES = %i[succeed rejected canceled failed].freeze
+  MAX_ATTEMPTS = 5
 
   include AASM
   include AASM::Locking
@@ -44,6 +47,7 @@ class Withdraw < ApplicationRecord
     state :rejected
     state :processing
     state :succeed
+    state :failing
     state :failed
     state :confirming
 
@@ -112,8 +116,16 @@ class Withdraw < ApplicationRecord
       transitions from: :processing, to: :skipped
     end
 
+    event :retry do
+      transitions from: %i[processing confirming failing], to: :failing, if: :retryable?
+      after do
+        update!(attempts: self.attempts + 1)
+        send_coins!
+      end
+    end
+
     event :fail do
-      transitions from: %i[processing confirming], to: :failed
+      transitions from: %i[processing confirming failing], to: :failed
       after do
         unlock_funds
         record_cancel_operations!
@@ -125,12 +137,12 @@ class Withdraw < ApplicationRecord
     sums_24h = Withdraw.where(currency_id: currency_id,
       member_id: member_id,
       created_at: [1.day.ago..Time.now],
-      aasm_state: [:processing, :confirming, :succeed])
+      aasm_state: [:processing, :confirming, :failing, :succeed])
       .sum(:sum) + sum
     sums_72h = Withdraw.where(currency_id: currency_id,
       member_id: member_id,
       created_at: [3.day.ago..Time.now],
-      aasm_state: [:processing, :confirming, :succeed])
+      aasm_state: [:processing, :confirming, :failing, :succeed])
       .sum(:sum) + sum
 
     sums_24h <= currency.withdraw_limit_24h && sums_72h <= currency.withdraw_limit_72h
@@ -169,6 +181,9 @@ class Withdraw < ApplicationRecord
       blockchain_txid: txid }
   end
 
+  def retryable?
+    attempts < MAX_ATTEMPTS
+  end
 private
 
   # @deprecated
@@ -252,7 +267,7 @@ private
 end
 
 # == Schema Information
-# Schema version: 20190402130148
+# Schema version: 20190617090551
 #
 # Table name: withdraws
 #
@@ -264,6 +279,7 @@ end
 #  fee          :decimal(32, 16)  not null
 #  txid         :string(128)
 #  aasm_state   :string(30)       not null
+#  attempts     :integer          default(0), not null
 #  block_number :integer
 #  sum          :decimal(32, 16)  not null
 #  type         :string(30)       not null
