@@ -11,6 +11,8 @@ module Worker
       Peatio::MQ::Events.publish("private", trade.ask.member.uid, "trade", trade.for_notify(trade.ask.member))
       Peatio::MQ::Events.publish("private", trade.bid.member.uid, "trade", trade.for_notify(trade.bid.member))
       Peatio::MQ::Events.publish("public", trade.market.id, "trades", {trades: [trade.for_global]})
+    rescue Mysql2::Error, ActiveRecord::StatementInvalid => e
+      raise e
     end
   end
 end

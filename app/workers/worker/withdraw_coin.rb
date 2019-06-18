@@ -62,7 +62,9 @@ module Worker
 
         Rails.logger.warn { "OK." }
 
-      rescue Exception => e
+      rescue Mysql2::Error, ActiveRecord::StatementInvalid => e
+        raise e
+      rescue StandardError => e
         begin
           Rails.logger.error { "Failed to process withdraw. See exception details below." }
           report_exception(e)

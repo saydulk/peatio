@@ -16,7 +16,9 @@ module Worker
       when 'cancel'
         Order.cancel(payload.dig('order', 'id'))
       end
-    rescue => e
+    rescue Mysql2::Error, ActiveRecord::StatementInvalid => e
+      raise e
+    rescue StandardError => e
       AMQPQueue.enqueue(:trade_error, e.message)
       report_exception_to_screen(e)
     end

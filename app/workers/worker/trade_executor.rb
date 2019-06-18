@@ -5,6 +5,8 @@ module Worker
   class TradeExecutor
     def process(payload)
       ::Matching::Executor.new(payload.symbolize_keys).execute
+    rescue Mysql2::Error, ActiveRecord::StatementInvalid => e
+      raise e
     end
   end
 end

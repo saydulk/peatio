@@ -39,7 +39,9 @@ module Worker
 
         AMQPQueue.enqueue(:deposit_collection, id: deposit.id)
         Rails.logger.warn { "Deposit collection job enqueue." }
-      rescue Exception => e
+      rescue Mysql2::Error, ActiveRecord::StatementInvalid => e
+        raise e
+      rescue StandardError => e
         begin
           Rails.logger.error { "Failed to collect fee transfer deposit #{deposit.id}. See exception details below." }
           report_exception(e)

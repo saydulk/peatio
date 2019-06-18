@@ -12,6 +12,8 @@ module Worker
       data = payload["data"]
 
       Peatio::MQ::Events.publish("private", uid, event, data)
+    rescue Mysql2::Error, ActiveRecord::StatementInvalid => e
+      raise e
     end
   end
 end

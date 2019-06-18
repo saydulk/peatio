@@ -41,7 +41,9 @@ module Worker
     # Don't re-enqueue this job in case of error.
     # The system is designed in such way that when user will
     # request list of accounts system will ask to generate address again (if it is not generated of course).
-    rescue => e
+    rescue Mysql2::Error, ActiveRecord::StatementInvalid => e
+      raise e
+    rescue StandardError => e
       report_exception(e)
     end
 

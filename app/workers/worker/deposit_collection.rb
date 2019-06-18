@@ -42,7 +42,9 @@ module Worker
         Rails.logger.warn { "The API accepted deposit collection and assigned transaction ID: #{transactions.map(&:as_json)}." }
 
         deposit.dispatch!
-      rescue Exception => e
+      rescue Mysql2::Error, ActiveRecord::StatementInvalid => e
+        raise e
+      rescue StandardError => e
         begin
           Rails.logger.error { "Failed to collect deposit #{deposit.id}. See exception details below." }
           report_exception(e)

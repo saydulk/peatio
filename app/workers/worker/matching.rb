@@ -32,6 +32,8 @@ module Worker
       else
         Rails.logger.fatal { "Unknown action: #{payload[:action]}" }
       end
+    rescue Mysql2::Error, ActiveRecord::StatementInvalid => e
+      raise e
     end
 
     def submit(order)

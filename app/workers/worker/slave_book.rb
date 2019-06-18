@@ -6,14 +6,20 @@ module Worker
 
     def initialize(run_cache_thread=true)
       @managers = {}
+      Market.enabled.each do |m|
+        initialize_orderbook_manager(m)
+      end
 
       if run_cache_thread
-        cache_thread = Thread.new do
+        Thread.abort_on_exception = true
+        threads = []
+        threads << Thread.new do
           loop do
             sleep 0.5
             cache_book
           end
         end
+        threads.each(&:join)
       end
     end
 
@@ -33,7 +39,9 @@ module Worker
       else
         raise ArgumentError, "Unknown action: #{@payload.action}"
       end
-    rescue
+    rescue Mysql2::Error, ActiveRecord::StatementInvalid => e
+      raise e
+    rescue StandardError => e
       Rails.logger.error { "Failed to process payload: #{$!}" }
       Rails.logger.error { $!.backtrace.join("\n") }
     end
@@ -44,7 +52,9 @@ module Worker
         Rails.cache.write "peatio:#{market_id}:depth:bids", get_depth(market_id, :bid)
         Rails.logger.debug { "SlaveBook (#{market_id}) updated" }
       end
-    rescue
+    rescue Mysql2::Error, ActiveRecord::StatementInvalid => e
+      raise e
+    rescue StandardError => e
       Rails.logger.error { "Failed to cache book: #{$!}" }
       Rails.logger.error { $!.backtrace.join("\n") }
     end

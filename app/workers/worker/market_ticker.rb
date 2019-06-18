@@ -17,6 +17,8 @@ module Worker
       trade = Trade.new payload
       update_ticker trade
       update_latest_trades trade
+    rescue Mysql2::Error, ActiveRecord::StatementInvalid => e
+      raise e
     end
 
     def update_ticker(trade)
