@@ -16,14 +16,14 @@ while running
   end.find_each do |bc|
 
     break unless running
-    Rails.logger.info { "Processing #{bc.name} blocks." }
+    Rails.logger.warn { "Processing #{bc.name} blocks." }
 
     blockchain = BlockchainService.new(bc)
     latest_block = blockchain.latest_block_number
 
     # Don't start process if we didn't receive new blocks.
     if bc.height + bc.min_confirmations >= latest_block
-      Rails.logger.info { "Skip synchronization. No new blocks detected height: #{bc.height}, latest_block: #{latest_block}" }
+      Rails.logger.warn { "Skip synchronization. No new blocks detected height: #{bc.height}, latest_block: #{latest_block}" }
       next
     end
 
@@ -31,41 +31,41 @@ while running
     to_block     = [latest_block, from_block + bc.step].min
     (from_block..to_block).each do |block_id|
 
-      Rails.logger.info { "Started processing #{bc.key} block number #{block_id}." }
+      Rails.logger.warn { "Started processing #{bc.key} block number #{block_id}." }
 
       block_json = blockchain.process_block(block_id)
-      Rails.logger.info { "Fetch #{block_json.transactions.count} transactions in block number #{block_id}." }
-      Rails.logger.info { "Finished processing #{bc.key} block number #{block_id}." }
+      Rails.logger.warn { "Fetch #{block_json.transactions.count} transactions in block number #{block_id}." }
+      Rails.logger.warn { "Finished processing #{bc.key} block number #{block_id}." }
     end
-    Rails.logger.info { "Finished processing #{bc.name} blocks." }
+    Rails.logger.warn { "Finished processing #{bc.name} blocks." }
   end
   rescue Mysql2::Error::ConnectionError => e
     begin
-      Rails.logger.info { 'Try recconecting to db.' }
+      Rails.logger.warn { 'Try recconecting to db.' }
       retries ||= 0
       ActiveRecord::Base.connection.reconnect!
     rescue
       sleep_time = (retries += 1)**1.5
-      Rails.logger.info { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
+      Rails.logger.warn { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
       sleep sleep_time
       retries < 5 ? retry : raise(e) # will retry the reconnect
     else
-      Rails.logger.info { 'Connection established' }
+      Rails.logger.warn { 'Connection established' }
       retries = 0
     end
   rescue ActiveRecord::StatementInvalid => e
     if e.cause.is_a?(Mysql2::Error::ConnectionError)
       begin
-        Rails.logger.info { 'Try recconecting to db.' }
+        Rails.logger.warn { 'Try recconecting to db.' }
         retries ||= 0
         ActiveRecord::Base.connection.reconnect!
       rescue
         sleep_time = (retries += 1)**1.5
-        Rails.logger.info { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
+        Rails.logger.warn { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
         sleep sleep_time
         retries < 5 ? retry : raise(e) # will retry the reconnect
       else
-        Rails.logger.info { 'Connection established' }
+        Rails.logger.warn { 'Connection established' }
         retries = 0
       end
     end

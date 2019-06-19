@@ -51,32 +51,32 @@ ARGV.each do |id|
 
   rescue Mysql2::Error::ConnectionError => e
     begin
-      Rails.logger.info { 'Try recconecting to db.' }
+      Rails.logger.warn { 'Try recconecting to db.' }
       retries ||= 0
       ActiveRecord::Base.connection.reconnect!
     rescue
       sleep_time = (retries += 1)**1.5
-      Rails.logger.info { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
+      Rails.logger.warn { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
       sleep sleep_time
       retries < 5 ? retry : raise(e) # will retry the reconnect
     else
-      Rails.logger.info { 'Connection established' }
+      Rails.logger.warn { 'Connection established' }
       retries = 0
       retry
     end
   rescue ActiveRecord::StatementInvalid => e
     if e.cause.is_a?(Mysql2::Error)
       begin
-        Rails.logger.info { 'Try recconecting to db.' }
+        Rails.logger.warn { 'Try recconecting to db.' }
         retries ||= 0
         ActiveRecord::Base.connection.reconnect!
       rescue
         sleep_time = (retries += 1)**1.5
-        Rails.logger.info { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
+        Rails.logger.warn { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
         sleep sleep_time
         retries < 5 ? retry : raise(e) # will retry the reconnect
       else
-        Rails.logger.info { 'Connection established' }
+        Rails.logger.warn { 'Connection established' }
         retries = 0
         retry
       end
@@ -99,32 +99,32 @@ ARGV.each do |id|
 
   rescue Mysql2::Error::ConnectionError => e
     begin
-      Rails.logger.info { 'Try recconecting to db.' }
+      Rails.logger.warn { 'Try recconecting to db.' }
       retries ||= 0
       ActiveRecord::Base.connection.reconnect!
     rescue
       sleep_time = (retries += 1)**1.5
-      Rails.logger.info { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
+      Rails.logger.warn { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
       sleep sleep_time
       retries < 5 ? retry : raise(e) # will retry the reconnect
     else
-      Rails.logger.info { 'Connection established' }
+      Rails.logger.warn { 'Connection established' }
       retries = 0
       retry
     end
   rescue ActiveRecord::StatementInvalid => e
     if e.cause.is_a?(Mysql2::Error)
       begin
-        Rails.logger.info { 'Try recconecting to db.' }
+        Rails.logger.warn { 'Try recconecting to db.' }
         retries ||= 0
         ActiveRecord::Base.connection.reconnect!
       rescue
         sleep_time = (retries += 1)**1.5
-        Rails.logger.info { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
+        Rails.logger.warn { "#{retries} retry. Waiting for connection #{sleep_time} seconds..." }
         sleep sleep_time
         retries < 5 ? retry : raise(e) # will retry the reconnect
       else
-        Rails.logger.info { 'Connection established' }
+        Rails.logger.warn { 'Connection established' }
         retries = 0
         retry
       end
