@@ -21,7 +21,8 @@ module API
         # @return [String, Member, NilClass]
         def authenticate
           payload, _header = authenticate!(@token)
-          fetch_member(payload)
+          current_user = fetch_member(payload)
+          raven_context(current_user) if defined?(Raven)
           Member.fetch_email(payload)
         rescue => e
           if Peatio::Auth::Error === e
@@ -42,6 +43,15 @@ module API
           rescue ActiveRecord::RecordNotUnique
             retry
           end
+        end
+
+        def raven_context(current_user)
+          Raven.tags_context(
+            email: current_user.email,
+            uid: current_user.uid,
+            role: current_user.role,
+            Peatio_Version: Peatio::Application::VERSION
+          )
         end
       end
     end

@@ -6,6 +6,7 @@ require_dependency 'authorization/bearer'
 class ApplicationController < ActionController::Base
   include Authorization::Bearer
   extend Memoist
+  before_action :raven_context
 
   helper_method :is_admin?, :current_user
 
@@ -38,5 +39,14 @@ class ApplicationController < ActionController::Base
 
   def is_admin?
     current_user.role.in?(Member::ADMIN_ROLES)
+  end
+
+  def raven_context
+    Raven.tags_context(
+      email: current_user.email,
+      uid: current_user.uid,
+      role: current_user.role,
+      Peatio_Version: Peatio::Application::VERSION
+    ) if defined?(Raven)
   end
 end
