@@ -23,15 +23,22 @@ module API
           is_array: true,
           success: Entities::Currency
         params do
-          optional :type, 
+          optional :type,
                    type: String,
                    values: { value: %w[fiat coin], message: 'public.currency.invalid_type' },
                    desc: -> { API::V2::Entities::Currency.documentation[:type][:desc] }
         end
         get '/currencies' do
-          currencies = Currency.enabled
-          currencies = currencies.where(type: params[:type]).includes(:blockchain) if params[:type] == 'coin'
-          currencies = currencies.where(type: params[:type]) if params[:type] == 'fiat'
+          currencies = Rails.cache.fetch('currencies') do
+            if params[:type] == 'coin'
+              Currency.enabled.where(type: params[:type]).includes(:blockchain)
+            elsif params[:type] == 'fiat'
+              Currency.enabled.here(type: params[:type]).to_json
+            else
+              Currency.enabled.to_json
+            end
+          end
+
           present currencies.ordered, with: API::V2::Entities::Currency
         end
       end
