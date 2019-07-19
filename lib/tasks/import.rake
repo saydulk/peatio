@@ -53,7 +53,7 @@ namespace :import do
       currency = Currency.find(row['ProductSymbol'])
       account = Account.find_by!(member: member, currency_id: currency)
       amount = row['Amount'].to_d
-      next if amount.zero?
+      next if amount <= 0
 
       asset_code = currency.coin? ? 102 : 101
       liability_code = currency.coin? ? 202 : 201
@@ -79,7 +79,7 @@ namespace :import do
     CSV.parse(csv_table, headers: true).map do |row|
       count += 1
       amount = row['Amount'].to_d
-      next if amount.zero?
+      next if amount <= 0
 
       composed_uid = 'ID' + (1_000_000_000 + row['AccountId'].to_i).to_s
       Member.find_by_uid!(composed_uid)
