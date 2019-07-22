@@ -211,6 +211,17 @@ describe Withdraw do
         subject.process!
         expect(subject.processing?).to be true
       end
+
+      it 'transitions to :undefined after calling #undefine from :processing' do
+        subject.process!
+        expect(subject.processing?).to be true
+
+        expect { subject.undefine! }.to_not change { subject.account.amount }
+        expect(subject.undefined?).to be true
+
+        subject.process!
+        expect(subject.processing?).to be true
+      end
     end
 
     context :cancel do
