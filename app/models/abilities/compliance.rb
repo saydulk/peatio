@@ -17,6 +17,7 @@ module Abilities
       can :read, Withdraw
       can :read, Account
       can :read, PaymentAddress
+      can :read, Job
     end
   end
 end

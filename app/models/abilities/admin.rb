@@ -9,6 +9,7 @@ module Abilities
       can :read, Order
       can :read, Trade
       can :read, Member
+      can :read, Job
 
       can :manage, Deposit
       can :manage, Withdraw

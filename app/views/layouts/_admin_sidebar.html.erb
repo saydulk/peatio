@@ -114,6 +114,14 @@
         </li>
       <% end %>
 
+      <% if can? :read, Job %>
+        <li class="list-icon-item <%= check_active('jobs') %>">
+          <%= link_to admin_jobs_path do %>
+            <i class="icon fa fa-tasks"></i>
+            <span class="menu-text">Jobs</span>
+          <% end %>
+      <% end %>
+
       <% if (can? :read, Operations::Account) && (can? :read, Operations::Expense) && (can? :read, Operations::Liability) &&
             (can? :read, Operations::Asset) && (can? :read, Operations::Revenue) %>
         <li class="list-icon-item <%= check_active('operations') %>">

@@ -8,6 +8,7 @@ module Abilities
     def initialize
       can :read, Order
       can :read, Trade
+      can :read, Job
 
       can :manage, Member
       can :manage, Deposit

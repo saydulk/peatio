@@ -33,7 +33,7 @@ module Operations
 end
 
 # == Schema Information
-# Schema version: 20190110164859
+# Schema version: 20190722152947
 #
 # Table name: liabilities
 #
@@ -41,8 +41,8 @@ end
 #  code           :integer          not null
 #  currency_id    :string(255)      not null
 #  member_id      :integer
-#  reference_id   :integer
 #  reference_type :string(255)
+#  reference_id   :integer
 #  debit          :decimal(32, 16)  default(0.0), not null
 #  credit         :decimal(32, 16)  default(0.0), not null
 #  created_at     :datetime         not null
@@ -50,6 +50,7 @@ end
 #
 # Indexes
 #
+#  index_groupkey                                        (code,currency_id,member_id)
 #  index_liabilities_on_currency_id                      (currency_id)
 #  index_liabilities_on_member_id                        (member_id)
 #  index_liabilities_on_reference_type_and_reference_id  (reference_type,reference_id)

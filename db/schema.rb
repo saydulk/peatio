@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2019_07_11_114027) do
+ActiveRecord::Schema.define(version: 2019_07_22_152947) do
 
   create_table "accounts", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "member_id", null: false
@@ -115,6 +115,30 @@ ActiveRecord::Schema.define(version: 2019_07_11_114027) do
     t.index ["reference_type", "reference_id"], name: "index_expenses_on_reference_type_and_reference_id"
   end
 
+  create_table "export_liabilities", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.integer "code", null: false
+    t.string "currency_id", null: false
+    t.integer "member_id"
+    t.string "reference_type"
+    t.integer "reference_id"
+    t.decimal "debit", precision: 32, scale: 16, default: "0.0", null: false
+    t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["code", "currency_id", "member_id"], name: "index_groupkey"
+    t.index ["currency_id"], name: "index_liabilities_on_currency_id"
+    t.index ["member_id"], name: "index_liabilities_on_member_id"
+    t.index ["reference_type", "reference_id"], name: "index_liabilities_on_reference_type_and_reference_id"
+  end
+
+  create_table "jobs", options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
+    t.string "state", limit: 30, default: "created", null: false
+    t.integer "rows", default: 0, null: false
+    t.string "description"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "liabilities", id: :integer, options: "ENGINE=InnoDB DEFAULT CHARSET=utf8", force: :cascade do |t|
     t.integer "code", null: false
     t.string "currency_id", null: false
@@ -125,6 +149,7 @@ ActiveRecord::Schema.define(version: 2019_07_11_114027) do
     t.decimal "credit", precision: 32, scale: 16, default: "0.0", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["code", "currency_id", "member_id"], name: "index_groupkey"
     t.index ["currency_id"], name: "index_liabilities_on_currency_id"
     t.index ["member_id"], name: "index_liabilities_on_member_id"
     t.index ["reference_type", "reference_id"], name: "index_liabilities_on_reference_type_and_reference_id"

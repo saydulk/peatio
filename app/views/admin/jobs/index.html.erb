@@ -1,0 +1,40 @@
+<% if can? :read, Job %>
+  <div class="card">
+    <%= table_for @jobs, class: 'table table-condensed table-striped' do |t| %>
+      <% t.column 'ID' do |x| %>
+        <%= x.id %>
+      <% end %>
+
+      <% t.column 'Description' do |x| %>
+        <code class="text-info">
+          <%= x.description.capitalize %>
+        </code>
+      <% end %>
+
+      <% t.column 'Rows Affected' do |x| %>
+        <%= x.rows %>
+      <% end %>
+
+      <% t.column 'State' do |x| %>
+        <% if x.failed? %>
+          <strong class="text-danger"><%= x.state.capitalize %></strong>
+        <% elsif x.succeed? %>
+          <strong class="text-success"><%= x.state.capitalize %></strong>
+        <% else %>
+          %= x.state.capitalize %>
+        <% end %>
+      <% end %>
+
+      <% t.column 'Updated at' do |x| %>
+        <%= l(x.updated_at, format: :long) %>
+      <% end %>
+
+      <% t.column 'Created at' do |x| %>
+        <%= l(x.created_at, format: :long) %>
+      <% end %>
+    <% end %>
+  </div>
+  <div class="mx-auto" style="width: 200px;">
+    <%= paginate @jobs %>
+  </div>
+<% end %>
