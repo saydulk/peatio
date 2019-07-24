@@ -166,19 +166,6 @@ You can interact with Peatio through API:
 ## Getting Involved
 We want to make it super-easy for Peatio users and contributors to talk to us and connect with each other, to share ideas, solve problems and help make Peatio awesome. Here are the main channels we're running currently, we'd love to hear from you on one of them:
 
-### Discourse
-
-[Rubykube Discourse Forum](https://discuss.rubykube.io)
-
-This is for all Peatio users. You can find guides, recipes, questions, and answers from Snowplow users including the Peatio.tech team.
-We welcome questions and contributions!
-
-### Telegram
-
-[@peatio](https://t.me/peatio)
-
-Chat with us and other community members on Telegram.
-
 ### GitHub
 Peatio issues
 
@@ -186,16 +173,9 @@ If you spot a bug, then please raise an issue in our main GitHub project (rubyku
 If you want to brainstorm a potential new feature, then the Rubykube Discourse Forum (see above) is probably a better place to start.
 
 ### Email
-hello@openware.com
+aaccou52@gmail.com
 
 If you want to talk directly to us (e.g. about a commercially sensitive issue), email is the easiest way.
-
-## Getting Support and Customization
-
-If you need help with running/deploying/customizing Peatio,
-you can contact us on [Openware.com](https://www.openware.com).
-
-Contact us by email: [hello@openware.com](mailto:hello@openware.com)
 
 ## License
 
