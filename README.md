@@ -16,9 +16,6 @@ and extend it using other microservices such as [Barong](https://www.github.com/
 
 Our mission is to build an open-source crypto currency exchange with a high performance trading engine and incomparable security. We are moving toward dev/ops best practices of running an enterprise grade exchange.
 
-We provide webinar or on site training for installing, configuring and administration best practices of Peatio.
-Feel free to contact us for joining the next training session: [Openware.com](https://www.openware.com)
-
 Help is greatly appreciated, feel free to submit pull-requests or open issues.
 
 ## Things You Should Know
