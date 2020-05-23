@@ -7,7 +7,7 @@ git_source(:github) { |repo_slug| "https://github.com/#{repo_slug}" }
 ruby '2.6.3'
 
 gem 'rails', '~> 5.2.3'
-gem 'puma', '~> 3.12.0'
+gem 'puma', '~> 3.12.6'
 gem 'mysql2', '~> 0.5.2'
 gem 'redis-rails', '~> 5.0.2'
 gem 'jbuilder', '~> 2.7.0'
